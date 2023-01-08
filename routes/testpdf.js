@@ -27,6 +27,10 @@ function getFileName(parentCompany, date, clientName) {
     return fileNameArr.join("_");
 }
 
+const getReceiptNumber = () => {
+    return Math.floor(1000 + Math.random() * 9000);
+};
+
 router.post("/", async (req, res) => {
     try {
         const {
@@ -43,21 +47,45 @@ router.post("/", async (req, res) => {
         const dateArr = [dateInst.getDate(), dateInst.getMonth() + 1, dateInst.getFullYear()];
         const dateStr = dateArr.join("-");
         const fileName = getFileName(parentCompany, dateStr, clientName);
-        const doc = new PDFDocumentTable();
-        // Saving the pdf file in root directory.
-        doc.pipe(fs.createWriteStream('invoices/' + user + '-' + fileName + ".pdf"));
+
+        let paymentTxt = payment.mode;
+        if (payment.mode === "cheque") {
+            paymentTxt += " (" + payment.chequeNumber + ")";
+        }
+
         const table = {
-            title: "Invoice",
+            title: "Receipt ",
             subtitle: parentCompany + "    " + dateStr,
-            headers: ["Items/Services", "Amount", "Payment"],
+            headers: ["Client Name", "Amount", "Payment"],
             rows: [
-                [clientName, amount, payment.mode + " (" + (payment.chequeNumber + ")" || "")],
+                [clientName, amount, (paymentTxt || "")],
             ],
         };
 
-        await doc.table(table, {
-            columnsSize: [200, 100, 100],
-        });
+        const doc = new PDFDocumentTable();
+        // Saving the pdf file in root directory.
+        doc.pipe(fs.createWriteStream('./invoices/' + user + '-' + fileName + ".pdf"));
+        const json = [
+
+            {
+                title: "Receipt ",
+                subtitle: parentCompany + "    " + dateStr + "      No:" + getReceiptNumber(),
+                headers: ["Client Name", "Amount", "Payment"],
+                rows: [
+                    [clientName, amount, (paymentTxt || "")],
+                ],
+            }
+        ];
+
+
+        // if json file is array
+        Array.isArray(json) ?
+            // any tables
+            json.forEach(table => doc.table(table, table.options || {})) :
+            doc.table(json, json.options || {});
+        // await doc.table(table, {
+        //     columnsSize: [200, 100, 100],
+        // });
 
         // Finalize PDF file
         await doc.end();

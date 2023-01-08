@@ -111,30 +111,29 @@ cron.schedule("*/10 * * * * *", async () => {
     }
 });
 
-function readFiles(dirname, onFileContent, onError) {
-    fs.readdir(dirname, async (err, filenames) => {
-        if (err) {
-            onError(err);
-            return;
-        }
+async function readFiles(dirname, onFileContent, onError) {
+    const path = dirname;
+    try {
+        const files = fs.readdirSync(path, { withFileTypes: true });
+        // debugger;
 
-        for (let index = 0; index < filenames.length; index++) {
-            const element = filenames[index];
-            const fileName = filenames[index] || "";
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i] || {};
+            const fileName = file.name || "";
             const user = fileName.split("-")[0];
-            const path = 'invoices/' + fileName;
+            const filePath = path + fileName;
 
-            // sendMessage();
-            const pdfresponse = await sendMessage(path, fileName + ".pdf", user);
-            console.log("pdfresponse:", pdfresponse);
-            if (pdfresponse.statusText === "OK") {
-                const deleteResponse = fs.unlinkSync(path);
-                console.log("deleteResponse:", deleteResponse);
+            const pdfresponse = await sendMessage(filePath, fileName, user);
+            console.log("Message sent");
 
+            if (pdfresponse && pdfresponse.statusText === "OK") {
+                const deleteResponse = fs.unlinkSync("./" + filePath);
+                console.log("File deleted");
             }
         }
-
-    });
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 const clearQueue = () => {
