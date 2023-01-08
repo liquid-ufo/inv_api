@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://admin:NNISr3HcYidPvFpD@cluster0.vj7ld.mongodb.net/invoice-mgt-sys?retryWrites=true&w=majority",
+    "jwtSecret": "oogaboogabooga"
+}

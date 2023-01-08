@@ -1,0 +1,136 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Invoice app API",
+        "description": "Invoice app API endpoints",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "basePath": "/",
+    "tags": [
+        {
+            "name": "Users",
+            "description": "API for users"
+        }
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/Users"
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "query",
+                    "required": true,
+                    "description": "Id of the user which is to be searched",
+                    "type": "integer"
+                }
+            ],
+            "produces": [
+                "application/json"
+            ],
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get user by id",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "User": {
+            "required": [
+                "name",
+                "_id",
+                "companies"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "uniqueItems": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "object",
+                    "properties": {
+                        "street": {
+                            "type": "string"
+                        },
+                        "suite": {
+                            "type": "string"
+                        },
+                        "city": {
+                            "type": "string"
+                        },
+                        "zipcode": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "catchPhrase": {
+                            "type": "string"
+                        },
+                        "bs": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "Users": {
+            "type": "array",
+            "$ref": "#/definitions/User"
+        }
+    }
+}
